@@ -4,7 +4,8 @@
 ✔ - /init y ver arquitectura (ARCHITECTURE.md)
 ✔ - Revisar proyecto y buenas prácticas. SOLID. Meterle claude.md!
 ✔ - .env.local en icloud files
-- PWA (docsAI/pwa.md)
+- PWA (docsAI/pwa.md) BUSCAR VOY POR AQUñI
+- Autenticación y protección contra abuso (contexto: fichero pwa de arriba, línea 49).
 - Integrarlo con la cámara
 - Integrar el trabajo con GitHub (Actions y pages). Curso CC FHer. Section 5, vídeos 7, 8, 9 y 10
 - Agrupar el contador de los macros de las subidas hechas en un mismo día. HAbilitar un botón de añadir a las macros del día o no.

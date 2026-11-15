@@ -17,6 +17,7 @@ MacroTrack es una aplicación web de una sola página construida con Next.js. Pe
 - **Modelo de dominio (`lib/types.ts`)**: define comidas, alimentos y macros; calcula nutrientes según la cantidad en gramos.
 
 ## Flujo de datos
+## Se explica al final
 
 ```mermaid
 flowchart LR
@@ -81,3 +82,16 @@ npm run build
 ```
 
 La aplicación se sirve localmente en `http://localhost:3000` durante el desarrollo.
+
+
+## Explicación Flujo de datos (From claude.ai)
+Aquí tienes el diagrama; abajo te explico el recorrido paso a paso.
+
+Las flechas con dos puntas indican que los datos van y vuelven (petición y respuesta). Se lee así:
+
+1. **Análisis de una foto:** la persona sube una foto en la interfaz React, que la reduce y la envía como Base64 a `POST /api/analyze`. Esa ruta se la pasa a Gemini junto con un prompt. Gemini devuelve los alimentos detectados, los gramos estimados y unos macros de respaldo.
+2. **Datos oficiales:** `/api/analyze` consulta USDA FoodData Central con varias búsquedas a la vez, una por alimento. Cada alimento vuelve a la interfaz con los nutrientes de USDA si existen y, si no, con la estimación de la IA.
+3. **Búsqueda manual:** si quieres corregir o añadir un alimento a mano, la interfaz llama a `GET /api/foods`, que busca directamente en USDA.
+4. **Persistencia:** las comidas, los nutrientes y la foto se guardan en IndexedDB, dentro del navegador. Por eso el historial solo se ve en el navegador y dispositivo donde se hizo, y no se sincroniza con ningún servidor.
+
+Puedes hacer clic en cualquier caja para profundizar en esa parte.
