@@ -49,6 +49,7 @@ Abre [http://localhost:3000](http://localhost:3000). Para detenerlo, vuelve a Te
 ## Comprobaciones de desarrollo
 
 ```bash
+npm run test
 npm run lint
 npm run typecheck
 npm run build

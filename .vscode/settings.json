@@ -1,4 +1,11 @@
 {
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.autoSave": "onFocusChange",
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "none",
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#ff6433",
     "activityBar.activeBorder": "#15202b",
