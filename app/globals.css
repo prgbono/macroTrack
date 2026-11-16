@@ -261,6 +261,10 @@ button {
   font-size: 11px;
   line-height: 1.45;
 }
+.offline-notice {
+  background: #fdf0df;
+  color: #8a5a1f;
+}
 .search-form {
   margin-top: 22px;
 }

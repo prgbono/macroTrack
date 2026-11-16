@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import NextImage from 'next/image'
 import { deleteMeal, getMeals, saveMeal } from '@/lib/db'
+import { requestErrorMessage } from '@/lib/network'
 import { foodMacros, mealMacros } from '@/lib/types'
 import type { FoodItem, Meal, Macros } from '@/lib/types'
 
@@ -53,6 +54,19 @@ export default function Home() {
   >([])
   const [storageReady, setStorageReady] = useState(false)
   const [lookupTargetId, setLookupTargetId] = useState<string | null>(null)
+  // Empieza en true para que el HTML del servidor coincida con la hidratación.
+  const [online, setOnline] = useState(true)
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine)
+    update()
+    window.addEventListener('online', update)
+    window.addEventListener('offline', update)
+    return () => {
+      window.removeEventListener('online', update)
+      window.removeEventListener('offline', update)
+    }
+  }, [])
 
   useEffect(() => {
     getMeals()
@@ -123,9 +137,7 @@ export default function Home() {
           : 'No se detectaron alimentos. Añádelos con el buscador.'
       )
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : 'Error al analizar la foto.'
-      )
+      setMessage(requestErrorMessage(error, 'Error al analizar la foto.'))
     } finally {
       setBusy(false)
     }
@@ -146,9 +158,7 @@ export default function Home() {
       if (!body.foods?.length)
         setMessage('No encontramos resultados. Prueba con otro nombre.')
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : 'Error en la búsqueda.'
-      )
+      setMessage(requestErrorMessage(error, 'Error en la búsqueda.'))
     } finally {
       setSearching(false)
     }
@@ -246,6 +256,12 @@ export default function Home() {
           <span className="status-dot" /> Solo en tu dispositivo
         </span>
       </header>
+      {!online && (
+        <p className="notice offline-notice" role="status">
+          Sin conexión. Puedes ver tu historial; analizar fotos y buscar
+          alimentos necesita Internet.
+        </p>
+      )}
       <section className="hero" id="top">
         <div>
           <p className="eyebrow">TU DIARIO, A TU RITMO</p>
