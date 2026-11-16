@@ -38,7 +38,6 @@ Vercel es la opción sencilla para conservar la app completa:
 
    No antepongas `NEXT_PUBLIC_` a estas claves. Las rutas actuales las leen desde el servidor.
 
-VOY POR AQUÍ
 5. Pulsa **Deploy**. La URL `https://<proyecto>.vercel.app` será la dirección que abrirás en el iPhone. Vercel crea despliegues desde el repositorio y proporciona HTTPS. [Despliegue desde GitHub](https://vercel.com/docs/git/vercel-for-github)
 6. Si cambias una variable de entorno, crea un nuevo despliegue para que entre en vigor.
 
@@ -248,6 +247,7 @@ Las funciones que llaman a `/api/analyze` y `/api/foods` deben explicar que nece
 
 Antes de publicar, añade tests para el registro/fallback del service worker y los estados de error offline junto con cualquier cambio de comportamiento. Ejecuta:
 
+VOY POR AQUí
 ```bash
 npm test
 npm run lint
