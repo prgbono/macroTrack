@@ -5,6 +5,8 @@
 ✔ - Revisar proyecto y buenas prácticas. SOLID. Meterle claude.md!
 ✔ - .env.local en icloud files
 - PWA (docsAI/pwa.md) BUSCAR VOY POR AQUñI
+- feat: Mostrar total acumulado de macros del día en la interfaz.
+- Aplicar lo que te dice notebooklm, aplicar la estrategia de que la IA te entreviste a tí!!!
 - Autenticación y protección contra abuso (contexto: fichero pwa de arriba, línea 49).
 - Integrarlo con la cámara
 - Integrar el trabajo con GitHub (Actions y pages). Curso CC FHer. Section 5, vídeos 7, 8, 9 y 10
