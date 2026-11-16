@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import NextImage from 'next/image'
 import { deleteMeal, getMeals, saveMeal } from '@/lib/db'
-import { requestErrorMessage } from '@/lib/network'
+import { requestErrorMessage, watchOnlineStatus } from '@/lib/network'
 import { foodMacros, mealMacros } from '@/lib/types'
 import type { FoodItem, Meal, Macros } from '@/lib/types'
 
@@ -57,16 +57,7 @@ export default function Home() {
   // Empieza en true para que el HTML del servidor coincida con la hidratación.
   const [online, setOnline] = useState(true)
 
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine)
-    update()
-    window.addEventListener('online', update)
-    window.addEventListener('offline', update)
-    return () => {
-      window.removeEventListener('online', update)
-      window.removeEventListener('offline', update)
-    }
-  }, [])
+  useEffect(() => watchOnlineStatus(setOnline), [])
 
   useEffect(() => {
     getMeals()
