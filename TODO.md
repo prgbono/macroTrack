@@ -9,6 +9,7 @@
 - Integrar el trabajo con GitHub (Actions y pages). Curso CC FHer. Section 5, vídeos 7, 8, 9 y 10
 - feat: Mostrar total acumulado de macros del día en la interfaz.
 - Darle una vuelta a la UI y ver qué te sobra y qué quieres añadir. POr ejemplo, integración con GArmin Connect y la app de la caminadora para añadir calorias qiemadas + pasos y pasos registrados por la caminadora.
+- separar dwsayuno, almuerzo, cena
 - Aplicar lo que te dice notebooklm, aplicar la estrategia de que la IA te entreviste a tí!!!
 - Autenticación y protección contra abuso (contexto: fichero pwa de arriba, línea 49).
 - Integrarlo con la cámara
