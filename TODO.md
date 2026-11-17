@@ -10,6 +10,9 @@
 - feat: Mostrar total acumulado de macros del día en la interfaz.
 - Darle una vuelta a la UI y ver qué te sobra y qué quieres añadir. POr ejemplo, integración con GArmin Connect y la app de la caminadora para añadir calorias qiemadas + pasos y pasos registrados por la caminadora.
 - separar dwsayuno, almuerzo, cena
+- booleano por defecto a true para mostrar si esa comida te la has zampado o no
+- resumen de lo que has comido en la ultima semana/mes
+- las barras de los macros con colores acordes a las recomendaciones de salud
 - Aplicar lo que te dice notebooklm, aplicar la estrategia de que la IA te entreviste a tí!!!
 - Autenticación y protección contra abuso (contexto: fichero pwa de arriba, línea 49).
 - Integrarlo con la cámara
