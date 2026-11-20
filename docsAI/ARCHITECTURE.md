@@ -15,6 +15,8 @@ MacroTrack es una aplicación web de una sola página construida con Next.js. Pe
 - **USDA FoodData Central**: fuente principal de nutrientes y buscador manual. Se usa `USDA_API_KEY` en el servidor, con `DEMO_KEY` como alternativa para pruebas.
 - **IndexedDB mediante `idb` (`lib/db.ts`)**: guarda comidas y fotos localmente en la base `macrotrack`, almacén `meals`, versión 1.
 - **Modelo de dominio (`lib/types.ts`)**: define comidas, alimentos y macros; calcula nutrientes según la cantidad en gramos.
+- **Estado de red (`lib/network.ts`)**: traduce fallos de red de `fetch` (`TypeError`) a un mensaje de "Sin conexión" y escucha los eventos `online`/`offline` para mostrar un aviso en la interfaz.
+- **PWA**: `app/manifest.ts` e iconos en `public/icons/` y `app/apple-icon.png`. `public/sw.js` es un service worker en JS plano que no pasa por el build. Se registra solo en producción desde `app/service-worker-register.tsx`, montado en `app/layout.tsx`. Las navegaciones van primero a la red. Sin red, sirve `/` desde caché y, si no existe, `public/offline.html`. Los recursos de `/_next/static/` se sirven primero desde caché. `/api/` nunca se cachea.
 
 ## Flujo de datos
 ## Se explica al final
@@ -67,7 +69,8 @@ flowchart LR
 - **Robustez del almacenamiento**: la base de IndexedDB está en versión 1 y no hay flujo de migración de datos ni exportación/importación documentados.
 - **Operación y observabilidad**: hay mensajes de error y registros básicos en el servidor, pero no se observan métricas, seguimiento de errores, alertas ni una estrategia de caché para USDA.
 - **Despliegue**: el repositorio contiene scripts de desarrollo, lint, typecheck y build, pero no se observa configuración de CI/CD, hosting o gestión de secretos para producción. En producción se deben configurar `GEMINI_API_KEY` y, de ser necesario, `GEMINI_MODEL` y `USDA_API_KEY` en el entorno del servidor.
-- **Pruebas automatizadas**: no se observan pruebas unitarias o de integración en el proyecto.
+- **Pruebas automatizadas**: Vitest en entorno `node` (sin jsdom), con tests `*.test.ts` junto al código. Cubren el modelo de macros, la ruta `/api/foods`, los mensajes de red, el registro del service worker y `public/sw.js`. `app/sw.test.ts` ejecuta el service worker con `node:vm` y simula `caches` y `fetch`. No hay tests de `/api/analyze`, `lib/db.ts` ni de la interfaz.
+- **Offline limitado**: sin conexión solo se abre la interfaz cacheada y se consulta el historial. Analizar fotos y buscar alimentos necesitan Internet, y no hay entrada manual de alimentos para crear comidas desde cero sin red.
 
 ## Configuración y comandos
 
@@ -76,6 +79,7 @@ Las variables esperadas están descritas en `.env.example`; las claves locales s
 ```bash
 npm install
 npm run dev
+npm test
 npm run lint
 npm run typecheck
 npm run build

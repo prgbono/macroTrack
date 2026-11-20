@@ -4,8 +4,8 @@
 ✔ - /init y ver arquitectura (ARCHITECTURE.md)
 ✔ - Revisar proyecto y buenas prácticas. SOLID. Meterle claude.md!
 ✔ - .env.local en icloud files
-- PWA (docsAI/pwa.md) BUSCAR VOY POR AQUñI
-- haz el CC /init para claude.md y lo añades junto con architecture.md
+✔ - PWA (docsAI/pwa.md)
+✔ - haz el CC /init para claude.md y lo añades junto con architecture.md.
 - Integrar el trabajo con GitHub (Actions y pages). Curso CC FHer. Section 5, vídeos 7, 8, 9 y 10
 - Cuando falla la request automática, añadir la posibilidad de reintentar sin necesidad de recargar/cambiar la foto
 - Añadir objetivo diario de cada macro y mostrarlo en la interfaz. Añadir la calculadora?

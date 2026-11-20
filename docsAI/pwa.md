@@ -8,6 +8,20 @@ Para mantener la aplicación actual y usarla desde el iPhone sin depender de tu 
 
 La instalación como PWA no necesita App Store ni una cuenta Apple Developer de pago. El plan Vercel Hobby es gratuito para uso personal y no comercial, sujeto a sus límites. Usa el dominio gratuito `*.vercel.app`; no compres un dominio ni actives un plan de pago durante las pruebas. [Plan Vercel Hobby](https://vercel.com/docs/plans/hobby), [condiciones de Vercel](https://vercel.com/legal/terms)
 
+## Estado actual
+
+| Paso | Estado |
+| --- | --- |
+| 1. Publicar en Vercel | Pendiente; se hace fuera del repositorio |
+| 2. Manifiesto e iconos | Hecho: `app/manifest.ts`, `public/icons/`, `app/apple-icon.png` |
+| 3. Fallback offline | Hecho: `public/offline.html` |
+| 4. Service worker | Hecho: `public/sw.js`, caché `macrotrack-v1` |
+| 5. Registro del service worker | Hecho: `app/service-worker-register.tsx`, solo en producción |
+| 6. Aviso sin conexión | Hecho: `lib/network.ts` y aviso en `app/page.tsx`. Falta la entrada manual offline |
+| 7. Tests | Hecho: `app/sw.test.ts`, `app/service-worker-register.test.ts`, `lib/network.test.ts`. Faltan las pruebas en el iPhone |
+
+Los pasos siguientes sirven de referencia; el código del repositorio es la fuente de verdad.
+
 ## Qué funcionará sin conexión
 
 Una PWA no puede ejecutar los servicios de Internet cuando el iPhone está desconectado. En MacroTrack:
@@ -220,20 +234,24 @@ Crea un componente cliente `app/service-worker-register.tsx`:
 
 import { useEffect } from 'react'
 
-export function ServiceWorkerRegister() {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
+export function registerServiceWorker() {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .catch((error) => {
         console.error('No se pudo registrar el service worker:', error)
       })
-    }
-  }, [])
+  }
+}
+
+export function ServiceWorkerRegister() {
+  useEffect(registerServiceWorker, [])
 
   return null
 }
 ```
 
-Impórtalo desde `app/layout.tsx` y renderiza `<ServiceWorkerRegister />` dentro de `<body>`. Regístralo solo en producción si prefieres evitar cachés durante desarrollo; para ello comprueba `process.env.NODE_ENV === 'production'` en el componente.
+Impórtalo desde `app/layout.tsx` y renderiza `<ServiceWorkerRegister />` dentro de `<body>`. Solo se registra en producción para evitar cachés durante el desarrollo; para probar el service worker en local usa `npm run build && npm run start`. `registerServiceWorker` se exporta por separado para poder probarla sin renderizar React.
 
 ## Paso 6: comunicar claramente el modo offline
 
@@ -245,9 +263,8 @@ Las funciones que llaman a `/api/analyze` y `/api/foods` deben explicar que nece
 
 ## Paso 7: probar y desplegar
 
-Antes de publicar, añade tests para el registro/fallback del service worker y los estados de error offline junto con cualquier cambio de comportamiento. Ejecuta:
+El registro y el fallback del service worker y los estados de error offline ya tienen tests: `app/service-worker-register.test.ts`, `app/sw.test.ts` y `lib/network.test.ts`. Si cambias `public/sw.js`, actualiza `app/sw.test.ts`; si subes la versión de caché, cambia también su constante `CACHE_NAME`. Antes de publicar, ejecuta:
 
-VOY POR AQUí
 ```bash
 npm test
 npm run lint
