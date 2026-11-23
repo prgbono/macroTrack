@@ -5,11 +5,19 @@ import type { ChangeEvent, FormEvent } from 'react'
 import NextImage from 'next/image'
 import { deleteMeal, getMeals, saveMeal } from '@/lib/db'
 import { requestErrorMessage, watchOnlineStatus } from '@/lib/network'
-import { foodMacros, mealMacros } from '@/lib/types'
-import type { FoodItem, Meal, Macros } from '@/lib/types'
+import { DEFAULT_GOALS, loadGoals, saveGoals } from '@/lib/goals'
+import { dailyMacros, foodMacros, mealMacros } from '@/lib/types'
+import type { FoodItem, Meal, Macros, MacroGoals } from '@/lib/types'
 
 const emptyMacros: Macros = { protein: 0, fat: 0, carbs: 0, calories: 0 }
 const round = (n: number) => Math.round(n * 10) / 10
+const goalKeys = ['protein', 'fat', 'carbs', 'calories'] as const
+const goalRows = [
+  ['Proteína', 'protein', 'g'],
+  ['Grasas', 'fat', 'g'],
+  ['Carbohidratos', 'carbs', 'g'],
+  ['Calorías', 'calories', 'kcal']
+] as const
 function makeId() {
   return crypto.randomUUID()
 }
@@ -57,7 +65,17 @@ export default function Home() {
   // Empieza en true para que el HTML del servidor coincida con la hidratación.
   const [online, setOnline] = useState(true)
 
+  const [goals, setGoals] = useState<MacroGoals>(DEFAULT_GOALS)
+  const [editingGoals, setEditingGoals] = useState(false)
+  const [goalsDraft, setGoalsDraft] = useState<Record<keyof Macros, string>>({
+    protein: '',
+    fat: '',
+    carbs: '',
+    calories: ''
+  })
+
   useEffect(() => watchOnlineStatus(setOnline), [])
+  useEffect(() => setGoals(loadGoals()), [])
 
   useEffect(() => {
     getMeals()
@@ -235,7 +253,34 @@ export default function Home() {
     }
   }
 
+  function startEditingGoals() {
+    setGoalsDraft({
+      protein: String(goals.protein),
+      fat: String(goals.fat),
+      carbs: String(goals.carbs),
+      calories: String(goals.calories)
+    })
+    setEditingGoals(true)
+  }
+  function submitGoals(event: FormEvent) {
+    event.preventDefault()
+    const next = {} as MacroGoals
+    for (const key of goalKeys) {
+      const value = Number(goalsDraft[key])
+      if (!Number.isFinite(value) || value <= 0) {
+        setMessage('Las metas deben ser números mayores que 0.')
+        return
+      }
+      next[key] = value
+    }
+    setGoals(next)
+    if (!saveGoals(next))
+      setMessage('No se pudieron guardar las metas en este dispositivo.')
+    setEditingGoals(false)
+  }
+
   const totals = mealMacros(foods)
+  const today = dailyMacros(history)
   return (
     <main className="shell">
       <header className="topbar">
@@ -471,13 +516,95 @@ export default function Home() {
           </p>
         </section>
         <aside className="side-column">
-          <section className="panel summary-panel">
+          <section className="panel goals-panel">
             <div className="section-heading">
               <div>
                 <span className="step">02</span>
-                <h2>Resumen</h2>
+                <h2>Hoy</h2>
               </div>
-              <span className="muted">Esta comida</span>
+              <button
+                className="lookup-link"
+                type="button"
+                onClick={() =>
+                  editingGoals ? setEditingGoals(false) : startEditingGoals()
+                }
+              >
+                {editingGoals ? 'Cancelar' : 'Editar metas'}
+              </button>
+            </div>
+            {editingGoals ? (
+              <form className="goals-form" onSubmit={submitGoals}>
+                {goalRows.map(([label, key, unit]) => (
+                  <label key={key}>
+                    {label} ({unit})
+                    <input
+                      type="number"
+                      min="1"
+                      step="any"
+                      value={goalsDraft[key]}
+                      onChange={(e) =>
+                        setGoalsDraft((d) => ({ ...d, [key]: e.target.value }))
+                      }
+                    />
+                  </label>
+                ))}
+                <button className="search-button" type="submit">
+                  Guardar metas
+                </button>
+              </form>
+            ) : (
+              <div className="macro-bars">
+                {goalRows.map(([label, key, unit]) => {
+                  const reached = today[key]
+                  const goal = goals[key]
+                  const over = reached > goal
+                  return (
+                    <div
+                      className={`macro-row${over ? ' over-goal' : ''}`}
+                      key={key}
+                    >
+                      <div>
+                        <span>{label}</span>
+                        <strong>
+                          {round(reached)} / {round(goal)} <small>{unit}</small>
+                        </strong>
+                      </div>
+                      <div
+                        className="bar"
+                        role="progressbar"
+                        aria-label={`${label} de hoy`}
+                        aria-valuenow={Math.round(reached)}
+                        aria-valuemin={0}
+                        aria-valuemax={Math.round(goal)}
+                      >
+                        <span
+                          className={key}
+                          style={{
+                            width: `${Math.min(100, (reached / goal) * 100)}%`
+                          }}
+                        />
+                      </div>
+                      <small className="goal-remaining">
+                        {over
+                          ? `Meta superada: +${round(reached - goal)} ${unit}`
+                          : `Faltan ${round(goal - reached)} ${unit}`}
+                      </small>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            <p className="estimate-note">
+              Solo cuenta las comidas guardadas hoy.
+            </p>
+          </section>
+          <section className="panel summary-panel">
+            <div className="section-heading">
+              <div>
+                <span className="step">03</span>
+                <h2>Esta comida</h2>
+              </div>
+              <span className="muted">Sin guardar</span>
             </div>
             <div className="calories">
               <strong>{Math.round(totals.calories)}</strong>
@@ -516,7 +643,7 @@ export default function Home() {
           <section className="panel history-panel">
             <div className="section-heading">
               <div>
-                <span className="step">03</span>
+                <span className="step">04</span>
                 <h2>Recientes</h2>
               </div>
               <span className="history-count">{history.length}</span>

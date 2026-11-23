@@ -748,3 +748,34 @@ footer span:first-child {
     border-radius: 13px;
   }
 }
+.goal-remaining {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  color: #899084;
+}
+.macro-row.over-goal .goal-remaining {
+  color: #b3452f;
+  font-weight: 600;
+}
+.macro-row.over-goal strong {
+  color: #b3452f;
+}
+.macro-row.over-goal .bar span {
+  background: #d9654b;
+}
+.goals-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 11px;
+}
+.goals-form label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.goals-form input {
+  width: 90px;
+}
