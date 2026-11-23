@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { foodMacros, mealMacros } from './types'
-import type { FoodItem } from './types'
+import { dailyMacros, foodMacros, mealMacros } from './types'
+import type { FoodItem, Meal } from './types'
 
 const chicken: FoodItem = {
   id: 'chicken',
@@ -63,5 +63,38 @@ describe('mealMacros', () => {
       carbs: 0,
       calories: 0
     })
+  })
+})
+
+describe('dailyMacros', () => {
+  const meal = (id: string, createdAt: Date): Meal => ({
+    id,
+    createdAt: createdAt.toISOString(),
+    foods: [chicken]
+  })
+  const day = new Date(2026, 10, 23, 12)
+
+  it('devuelve ceros sin comidas', () => {
+    expect(dailyMacros([], day)).toEqual({
+      protein: 0,
+      fat: 0,
+      carbs: 0,
+      calories: 0
+    })
+  })
+  it('suma varias comidas del mismo día', () => {
+    const meals = [
+      meal('a', new Date(2026, 10, 23, 8)),
+      meal('b', new Date(2026, 10, 23, 20))
+    ]
+    expect(dailyMacros(meals, day).protein).toBeCloseTo(93)
+  })
+  it('ignora comidas de otros días, incluido el borde de medianoche', () => {
+    const meals = [
+      meal('ayer', new Date(2026, 10, 22, 23, 59, 59)),
+      meal('manana', new Date(2026, 10, 24, 0, 0, 0)),
+      meal('hoy', new Date(2026, 10, 23, 0, 0, 0))
+    ]
+    expect(dailyMacros(meals, day).protein).toBeCloseTo(46.5)
   })
 })
