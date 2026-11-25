@@ -6,4 +6,5 @@ out
 .DS_Store
 *.tsbuildinfo
 .vitest/
+.vscode/settings.json
 gh_token.md

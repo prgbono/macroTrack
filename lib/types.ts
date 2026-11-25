@@ -38,3 +38,17 @@ export const mealMacros = (foods: FoodItem[]): Macros =>
     },
     { protein: 0, fat: 0, carbs: 0, calories: 0 }
   )
+export type MacroGoals = Macros
+
+const sameLocalDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate()
+
+/** Suma los macros de las comidas guardadas en el día local de `day`. */
+export const dailyMacros = (meals: Meal[], day: Date = new Date()): Macros =>
+  mealMacros(
+    meals
+      .filter((meal) => sameLocalDay(new Date(meal.createdAt), day))
+      .flatMap((meal) => meal.foods)
+  )
